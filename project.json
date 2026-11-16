@@ -156,7 +156,7 @@
     ],
     "notice": "src/notices/conscrypt-NOTICE.txt"
   },
-  "signing_certificate_sha256": "c114ae6f08ed304a43548ffaa62f03dc8124b97c5d11b9e60c3e4f6741aae4c4",
+  "signing_certificate_sha256": "0ccc382b5875e58a25cd1f305e3c1f88775feeebb77f4106f2b8381da28431ef",
   "signing_alias": "06link-release",
   "signing_keystore": ".private/06link-release.p12",
   "signing_password_file": ".private/06link-release-password.txt"
