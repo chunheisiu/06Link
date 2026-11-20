@@ -32,6 +32,7 @@ public final class E01NativeSettings {
     SharedPreferences instrument(){return host.getSharedPreferences(E01InstrumentStyle.PREFERENCES,0);}
     boolean bool(String key,boolean ignored){switch(key){
         case "cluster":return (Boolean)load("ClusterMapEnabled");
+        case "auto_start_on_boot":return (Boolean)load("AutoStartOnBoot");
         case "auto_connect":return (Boolean)call(singleton("DiPlayPreferences"),"autoConnect",host);
         case "location":return (Boolean)load("LocationReportingEnabled");
         case "hevc":return (Boolean)load("HevcEnabled");
@@ -63,11 +64,13 @@ public final class E01NativeSettings {
         case "appearance":String mode=call(singleton("Appearance"),"mode",host).toString();return mode.equals("LIGHT")?"白天":mode.equals("DARK")?"夜间":"跟随系统";
         case "driver":return (Boolean)load("RightHandDrive")?"右侧":"左侧";
         case "buffer":int b=(Integer)load("MediaBufferMillis");return b==100?"最低":b==300?"标准":b==500?"较大":b+" ms";
+        case "wired_port":return "otg".equals(ui.getString("wired_port","host"))?"点烟器旁 USB":"扶手箱 USB";
         case "current":return E01WiredUi.current(host)==500?"0.5 A":E01WiredUi.current(host)==1500?"1.5 A":"2.4 A";
         default:throw new IllegalArgumentException(key);
     }}
     void set(String key,Object v){boolean ok=true;switch(key){
         case "default_connection":ok=ui.edit().putString(key,(String)v).commit();break;
+        case "auto_start_on_boot":save("AutoStartOnBoot",v);break;
         case "auto_connect":call(singleton("DiPlayPreferences"),"saveAutoConnect",host,v);break;
         case "cluster":save("ClusterMapEnabled",v);call(singleton("GenericClusterPlaceholder"),"ensure",host);break;
         case "location":save("LocationReportingEnabled",v);break;
@@ -88,6 +91,7 @@ public final class E01NativeSettings {
         case "size":save("UiScalePercent",v.equals("标准")?100:v.equals("较小")?85:115);break;
         case "buffer":save("MediaBufferMillis",v.equals("最低")?100:v.equals("标准")?300:500);break;
         case "driver":save("RightHandDrive",v.equals("右侧"));break;
+        case "wired_port":if(!v.equals("扶手箱 USB")&&!v.equals("点烟器旁 USB"))throw new IllegalArgumentException(key);ok=ui.edit().putString(key,v.equals("点烟器旁 USB")?"otg":"host").commit();break;
         case "current":ok=E01WiredUi.save(host,v.equals("0.5 A")?500:v.equals("1.5 A")?1500:2400);break;
         case "rotation":call(singleton("ScreenRotation"),"save",host,value("ScreenRotation$Choice",v.equals("自动")?"AUTO":"R"+v.toString().replace("°","")));call(singleton("CarDisplay"),"fullScreen",host);host.recreate();break;
         case "appearance":call(singleton("Appearance"),"save",host,value("Appearance$Mode",v.equals("白天")?"LIGHT":v.equals("夜间")?"DARK":"AUTO"));call(host,"applyAppearance");break;
